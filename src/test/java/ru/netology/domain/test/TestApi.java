@@ -10,7 +10,7 @@ import ru.netology.domain.page.LoginPage;
 import static com.codeborne.selenide.Selenide.open;
 
 
-public class MoneyTransferTest {
+public class TestApi {
 
     @BeforeEach
     public void setUp() {
