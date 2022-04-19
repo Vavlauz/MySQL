@@ -7,7 +7,6 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Locale;
 
@@ -23,11 +22,6 @@ public class DataHelper {
     }
 
     @Value
-    public static class CardInfo {
-        private String cardNumber;
-    }
-
-    @Value
     public static class VerificationCode {
         private String code;
     }
@@ -36,8 +30,11 @@ public class DataHelper {
         return new AuthInfo("vasya", "qwerty123");
     }
 
-    public static AuthInfo getOtherAuthInfo(AuthInfo original) {
-        return new AuthInfo("petya", "123qwerty");
+    public static AuthInfo getInvalidAuthInfo() {
+        Faker faker = new Faker(new Locale("en"));
+        String login = faker.name().username();
+        String password = faker.internet().password();
+        return new AuthInfo(login, password);
     }
 
     public static VerificationCode getVerificationCodeFor(AuthInfo authInfo) {
@@ -52,34 +49,23 @@ public class DataHelper {
         return null;
     }
 
-    public static CardInfo getFirstCardInfo() {
-        return new CardInfo("5559000000000001");
-    }
+    public static void clearDB() {
+        var deleteCode = "DELETE FROM auth_codes";
+        var deleteTransaction = "DELETE FROM card_transactions";
+        var deleteCard = "DELETE FROM cards";
+        var deleteUser = "DELETE FROM users";
+        var runner = new QueryRunner();
+        try (var conn = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/app", "app", "pass")
+        ) {
+            runner.update(conn, deleteCode);
+            runner.update(conn, deleteTransaction);
+            runner.update(conn, deleteCard);
+            runner.update(conn, deleteUser);
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
 
-    public static CardInfo getSecondCardInfo() {
-        return new CardInfo("5559000000000002");
-    }
-
-    public static void clearDB() throws SQLException {
-        String deleteFromCardTransactions = "DELETE FROM card_transactions";
-        String deleteFromAuthCodes = "DELETE FROM auth_codes";
-        String deleteFromCards = "DELETE FROM cards";
-        String deleteFromUsers = "DELETE FROM users";
-
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "user", "pass");
-        PreparedStatement cardTransactions = connection.prepareStatement(deleteFromCardTransactions);
-        PreparedStatement authCodes = connection.prepareStatement(deleteFromAuthCodes);
-        PreparedStatement cards = connection.prepareStatement(deleteFromCards);
-        PreparedStatement users = connection.prepareStatement(deleteFromUsers);
-        cardTransactions.executeUpdate();
-        authCodes.executeUpdate();
-        cards.executeUpdate();
-        users.executeUpdate();
-    }
-
-    public static String getInvalidVerificationCode() {
-        Faker faker = new Faker(Locale.ENGLISH);
-        return String.valueOf(faker.number());
     }
 
 }
