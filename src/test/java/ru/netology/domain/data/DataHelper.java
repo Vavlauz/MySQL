@@ -37,7 +37,7 @@ public class DataHelper {
         return new AuthInfo(login, password);
     }
 
-    public static VerificationCode getVerificationCodeFor(AuthInfo authInfo) {
+    public static VerificationCode getVerificationCodeFor() {
         var codeSQL = "SELECT code FROM auth_codes ORDER BY created DESC LIMIT 1";
         var runner = new QueryRunner();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "user", "pass")) {
@@ -56,7 +56,7 @@ public class DataHelper {
         var deleteUser = "DELETE FROM users";
         var runner = new QueryRunner();
         try (var conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/app", "app", "pass")
+                "jdbc:mysql://localhost:3306/app", "user", "pass")
         ) {
             runner.update(conn, deleteCode);
             runner.update(conn, deleteTransaction);

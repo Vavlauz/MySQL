@@ -31,7 +31,7 @@ public class TestApi {
         var validUser = getAuthInfo();
         var loginPage = new LoginPage();
         var verificationPage = loginPage.validLogin(validUser);
-        var verifyInfo = DataHelper.getVerificationCodeFor(validUser);
+        var verifyInfo = DataHelper.getVerificationCodeFor();
         var dashboardPage = verificationPage.validVerify(verifyInfo);
         dashboardPage.getHeading();
     }
@@ -41,11 +41,11 @@ public class TestApi {
     void wrongEnterPasswordThreeTimes() {
         var invalidUser = getInvalidAuthInfo();
         var loginPage = new LoginPage();
-        loginPage.invalidLogin(invalidUser);
+        loginPage.login(invalidUser);
         loginPage.cleanFields();
-        loginPage.invalidLogin(invalidUser);
+        loginPage.login(invalidUser);
         loginPage.cleanFields();
-        loginPage.invalidLogin(invalidUser);
+        loginPage.login(invalidUser);
         loginPage.blockNotification();
     }
 
